@@ -8,13 +8,13 @@ namespace SitecoreFileBrowser.Commands
 
         public override CommandArguments Execute(CommandArguments args)
         {
-            Log.Info("SitecoreFileBrowser: Begin executing Challenge", this);
+            Log.Info($"SitecoreFileBrowser: Begin executing Challenge '{args}'", this);
 
             args.HttpContext.Response.Clear();
             args.HttpContext.Response.ContentType = "plain/text";
             args.HttpContext.Response.Write(Configuration.AuthenticationProvider.GetChallengeToken());
 
-            Log.Info("SitecoreFileBrowser: Finished executing Challenge", this);
+            Log.Info($"SitecoreFileBrowser: Finished executing Challenge '{args}'", this);
 
             return args;
         }

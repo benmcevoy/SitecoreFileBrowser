@@ -12,12 +12,16 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
 
             foreach (var directory in machine.Root.Directories)
             {
+                writer.Append("<ul>");
                 Directory(machine.Address, directory, writer);
+                writer.Append("</ul>");
             }
 
             foreach (var file in machine.Root.Files)
             {
+                writer.Append("<ul>");
                 File(machine.Address, file, writer);
+                writer.Append("</ul>");
             }
 
             return writer.ToString();
@@ -25,7 +29,7 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
 
         private static StringBuilder Directory(string address, DirectoryInfo directory, StringBuilder writer)
         {
-            writer.Append($"<span class='title'>{directory.Name}</span>");
+            writer.Append($"<li class='directory'>{directory.Name}</li>");
 
             if (directory.Directories.Any())
             {
@@ -33,11 +37,7 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
 
                 foreach (var subDirectory in directory.Directories)
                 {
-                    writer.Append("<li>");
-
                     Directory(address, subDirectory, writer);
-
-                    writer.Append("</li>");
                 }
 
                 writer.Append("</ul>");
@@ -49,11 +49,7 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
 
                 foreach (var file in directory.Files)
                 {
-                    writer.Append("<li>");
-
                     File(address, file, writer);
-
-                    writer.Append("</li>");
                 }
 
                 writer.Append("</ul>");
@@ -64,7 +60,7 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
         
         private static StringBuilder File(string address, FileInfo file, StringBuilder writer)
         {
-            writer.Append($"<a href='{Configuration.Route}?command=proxy&address={address}&remoteCommand=download&path={file.Path}'>{file.Name}</a>");
+            writer.Append($"<li><a href='{Configuration.Route}?command=proxy&address={address}&remoteCommand=download&path={file.Path}'>{file.Name}</a></li>");
 
             return writer;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security;
+using Sitecore.Diagnostics;
 using Sitecore.Security.Authentication;
 
 namespace SitecoreFileBrowser.Commands
@@ -11,6 +12,8 @@ namespace SitecoreFileBrowser.Commands
 
         public override CommandArguments Execute(CommandArguments args)
         {
+            Log.Info($"SitecoreFileBrowser: Begin executing Proxy '{args}'", this);
+
             // user must be loggged in to issue a proxy request
             var user = AuthenticationManager.GetActiveUser();
 
@@ -25,6 +28,8 @@ namespace SitecoreFileBrowser.Commands
             client.OpenRead(remoteCommand).CopyTo(args.HttpContext.Response.OutputStream);
 
             args.HttpContext.Response.Headers.Add(client.ResponseHeaders);
+
+            Log.Info($"SitecoreFileBrowser: Finished executing Proxy '{args}'", this);
 
             return args;
         }

@@ -12,15 +12,16 @@ namespace SitecoreFileBrowser.Commands
 
         public override CommandArguments Execute(CommandArguments args)
         {
-            var path = args["path"].FromBase64();
+            
 
-            Log.Info($"SitecoreFileBrowser: Begin executing download '{path}'", this);
+            Log.Info($"SitecoreFileBrowser: Begin executing download '{args}'", this);
             
             var securityState =
                 Configuration.AuthenticationProvider.ValidateRequest(args.HttpContext.Request);
 
             if (!securityState.IsAllowed) throw new SecurityException();
 
+            var path = args["path"].FromBase64();
             var result = Configuration.FileBrowser.Download(new FileInfo { Path = args["path"] });
 
             args.HttpContext.Response.Clear();
@@ -29,6 +30,8 @@ namespace SitecoreFileBrowser.Commands
             args.HttpContext.Response.AddHeader("Content-Length", result.Length.ToString());
 
             result.CopyTo(args.HttpContext.Response.OutputStream);
+
+            Log.Info($"SitecoreFileBrowser: Finished executing download '{args}'", this);
 
             return args;
         }
