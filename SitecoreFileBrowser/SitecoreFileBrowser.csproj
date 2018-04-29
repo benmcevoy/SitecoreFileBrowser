@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\Browse.cs" />
+    <Compile Include="Commands\Challenge.cs" />
     <Compile Include="Commands\Download.cs" />
     <Compile Include="Commands\Proxy.cs" />
     <Compile Include="Commands\Command.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Security\IAuthenticationProvider.cs" />
     <Compile Include="Security\SecurityState.cs" />
     <Compile Include="Security\SitecoreDatabaseChallengeStore.cs" />
+    <Compile Include="sitecore\admin\SitecoreFileBrowser\CurrentMachine.cs" />
     <Compile Include="sitecore\admin\SitecoreFileBrowser\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -123,6 +125,7 @@
     <Compile Include="sitecore\admin\SitecoreFileBrowser\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="sitecore\admin\SitecoreFileBrowser\TreeView.cs" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

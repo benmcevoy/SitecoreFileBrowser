@@ -65,7 +65,7 @@ namespace SitecoreFileBrowser.Security
                 : new SecurityState(false);
         }
 
-        public WebClient CreateAuthenticatedWebClient(string url)
+        public SuperWebClient CreateAuthenticatedWebClient(string url)
         {
             var remoteUri = new Uri(url);
 
@@ -105,23 +105,48 @@ namespace SitecoreFileBrowser.Security
                     "Your SitecoreFileBrowser shared secret is not long enough. Please make it more than 30 characters for maximum security. You can set this in SitecoreFileBrowser.config on the <authenticationProvider>");
         }
 
-        protected class SuperWebClient : WebClient
+        
+    }
+
+    public class SuperWebClient : WebClient
+    {
+        private readonly int _timeoutInMs;
+        public readonly CookieContainer CookieContainer = new CookieContainer();
+
+        public SuperWebClient(int timeoutInMs)
         {
-            private readonly int _timeoutInMs;
+            _timeoutInMs = timeoutInMs;
+        }
 
-            public SuperWebClient(int timeoutInMs)
+        public void SetCookies(HttpCookieCollection httpCookies, string domain)
+        {
+            foreach (var k in httpCookies.AllKeys)
             {
-                _timeoutInMs = timeoutInMs;
+                var originalCookie = HttpContext.Current.Request.Cookies[k];
+                var cookie = new Cookie
+                {
+                    Name = originalCookie.Name,
+                    Value = originalCookie.Value,
+                    Domain = domain,
+                    Expires = originalCookie.Expires
+                };
+
+                if (!string.IsNullOrWhiteSpace(originalCookie.Path)) cookie.Path = originalCookie.Path;
+
+                CookieContainer.Add(cookie);
             }
+        }
 
-            protected override WebRequest GetWebRequest(Uri address)
-            {
-                var request = base.GetWebRequest(address);
+        protected override WebRequest GetWebRequest(Uri address)
+        {
+            var request = base.GetWebRequest(address);
 
-                request.Timeout = _timeoutInMs;
+            if (!(request is HttpWebRequest webRequest)) return request;
 
-                return request;
-            }
+            webRequest.CookieContainer = CookieContainer;
+            request.Timeout = _timeoutInMs;
+
+            return request;
         }
     }
 }

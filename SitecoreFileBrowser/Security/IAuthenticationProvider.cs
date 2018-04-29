@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Web;
+﻿using System.Web;
 
 namespace SitecoreFileBrowser.Security
 {
@@ -7,6 +6,6 @@ namespace SitecoreFileBrowser.Security
 	{
 		string GetChallengeToken();
 		SecurityState ValidateRequest(HttpRequestBase request);
-		WebClient CreateAuthenticatedWebClient(string url);
+	    SuperWebClient CreateAuthenticatedWebClient(string url);
 	}
 }

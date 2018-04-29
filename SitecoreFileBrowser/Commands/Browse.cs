@@ -1,7 +1,6 @@
-﻿using System;
-using System.Web;
+﻿using System.Security;
+using Newtonsoft.Json;
 using Sitecore.Diagnostics;
-using SitecoreFileBrowser.Browse.Model;
 
 namespace SitecoreFileBrowser.Commands
 {
@@ -9,31 +8,24 @@ namespace SitecoreFileBrowser.Commands
     {
         public Browse() : base("Browse") { }
 
-        public override object Execute(CommandArguments args)
+        public override CommandArguments Execute(CommandArguments args)
         {
             Log.Info("SitecoreFileBrowser: Begin executing browse", this);
 
-            var result = Cache(() => Configuration.FileBrowser.Browse());
+            var securityState =
+                Configuration.AuthenticationProvider.ValidateRequest(args.HttpContext.Request);
+
+            if (!securityState.IsAllowed) throw new SecurityException();
+
+            args.HttpContext.Response.Clear();
+            args.HttpContext.Response.ContentType = "application.json";
+
+            args.HttpContext.Response.Write(
+                JsonConvert.SerializeObject(Configuration.FileBrowser.Browse(args["address"])));
 
             Log.Info("SitecoreFileBrowser: Finished executing browse", this);
 
-            return result;
-        }
-
-        private static object Cache(Func<MachineInfo> f)
-        {
-            var cached = HttpContext.Current.Cache["__browse_ck"];
-
-            if (cached != null) return cached;
-
-            var result = f();
-
-            if (result == null) return null;
-
-            HttpRuntime.Cache.Insert("__browse_ck", result, null, 
-                DateTime.Now.Add(TimeSpan.FromMinutes(Configuration.BrowseCacheInMinutes)), TimeSpan.Zero);
-
-            return result;
+            return args;
         }
     }
 }

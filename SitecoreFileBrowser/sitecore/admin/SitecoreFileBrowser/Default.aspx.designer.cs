@@ -31,12 +31,21 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser {
         protected global::System.Web.UI.WebControls.Repeater MachineRepeater;
         
         /// <summary>
-        /// json control.
+        /// CurrentMachine control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal json;
+        protected global::System.Web.UI.WebControls.Literal CurrentMachine;
+        
+        /// <summary>
+        /// TreeView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal TreeView;
     }
 }

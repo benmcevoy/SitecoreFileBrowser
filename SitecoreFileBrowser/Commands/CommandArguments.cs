@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 
 namespace SitecoreFileBrowser.Commands
 {
     public class CommandArguments
     {
-        public CommandArguments(IDictionary<string, string> context)
+        public HttpContextBase HttpContext { get; }
+
+        public CommandArguments(HttpContextBase httpContext, IDictionary<string, string> context)
         {
+            HttpContext = httpContext;
             Context = context ?? new Dictionary<string, string>();
         }
 

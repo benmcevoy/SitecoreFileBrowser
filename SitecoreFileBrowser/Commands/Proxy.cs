@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Security;
+using Sitecore.Security.Authentication;
 
 namespace SitecoreFileBrowser.Commands
 {
@@ -7,16 +9,24 @@ namespace SitecoreFileBrowser.Commands
     {
         public Proxy() : base("Proxy") { }
 
-        public override object Execute(CommandArguments args)
+        public override CommandArguments Execute(CommandArguments args)
         {
+            // user must be loggged in to issue a proxy request
+            var user = AuthenticationManager.GetActiveUser();
+
+            if (!user.IsAdministrator) throw new SecurityException();
+
             var remoteCommand = $"{args["address"]}{Configuration.Route}?command={args["remoteCommand"]}&{Arguments(args)}";
             
             var client = Configuration.AuthenticationProvider.CreateAuthenticatedWebClient(remoteCommand);
 
-            // TODO: handle streams
-            var result = client.DownloadString(remoteCommand);
+            args.HttpContext.Response.Clear();
+            
+            client.OpenRead(remoteCommand).CopyTo(args.HttpContext.Response.OutputStream);
 
-            return result;
+            args.HttpContext.Response.Headers.Add(client.ResponseHeaders);
+
+            return args;
         }
 
         private static string Arguments(CommandArguments args)
@@ -24,6 +34,7 @@ namespace SitecoreFileBrowser.Commands
             return args.Context.Aggregate("", (s, pair) =>
             {
                 if (pair.Key.Equals("address", StringComparison.OrdinalIgnoreCase)) return s;
+                if (pair.Key.Equals("command", StringComparison.OrdinalIgnoreCase)) return s;
                 if (pair.Key.Equals("remoteCommand", StringComparison.OrdinalIgnoreCase)) return s;
 
                 s += $"{pair.Key}={pair.Value}&";

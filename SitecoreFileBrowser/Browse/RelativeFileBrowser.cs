@@ -8,13 +8,16 @@ namespace SitecoreFileBrowser.Browse
 {
     public class RelativeFileBrowser : IFileBrowser
     {
-        public MachineInfo Browse()
+        public int BrowseCacheInMinutes { get; set; }
+
+        public MachineInfo Browse(string address)
         {
-            return new MachineInfo
+            return Cache(() => new MachineInfo
             {
+                Address = address,
                 Name = Environment.MachineName,
                 Root = Map(HttpRuntime.AppDomainAppPath, HttpRuntime.AppDomainAppPath)
-            };
+            });
         }
 
         public Stream Download(FileInfo file)
@@ -65,6 +68,22 @@ namespace SitecoreFileBrowser.Browse
                 Name = f.Name,
                 Path = r.ToBase64()
             };
+        }
+
+        private MachineInfo Cache(Func<MachineInfo> f)
+        {
+            var cached = HttpContext.Current.Cache["__browse_ck"];
+
+            if (cached != null) return (MachineInfo)cached;
+
+            var result = f();
+
+            if (result == null) return null;
+
+            HttpRuntime.Cache.Insert("__browse_ck", result, null,
+                DateTime.Now.Add(TimeSpan.FromMinutes(BrowseCacheInMinutes)), TimeSpan.Zero);
+
+            return result;
         }
     }
 }

@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Security;
 using System.Web;
-using Newtonsoft.Json;
 using Sitecore.Pipelines.HttpRequest;
-using Sitecore.SecurityModel;
 using SitecoreFileBrowser.Commands;
 
 namespace SitecoreFileBrowser
@@ -47,42 +44,21 @@ namespace SitecoreFileBrowser
             // workaround to allow streaming output without an exception in Sitecore 8.1 Update-3 and later
             context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
 
-            // this securitydisabler allows the control panel to execute unfettered when debug compilation is enabled but you are not signed into Sitecore
-            using (new SecurityDisabler())
-            {
-                if (WasChallenge(context)) return;
-
-                var securityState = Configuration.AuthenticationProvider.ValidateRequest(new HttpRequestWrapper(HttpContext.Current.Request));
-
-                if (!securityState.IsAllowed) throw new SecurityException();
-
-                DispatchCommand(context, command);
-            }
+            DispatchCommand(context, command);
         }
 
-        private static void DispatchCommand(HttpContextBase context, string command)
+        private static CommandArguments DispatchCommand(HttpContextBase context, string command)
         {
-            var args = new CommandArguments(ToDictionary(context.Request.QueryString));
-            object result;
-
+            var args = new CommandArguments(context, ToDictionary(context.Request.QueryString));
+           
             switch (command.ToUpperInvariant())
             {
-                case "BROWSE":
-                    result = new Commands.Browse().Execute(args);
-                    break;
-
-                case "DOWNLOAD":
-                    result = new Download().Execute(args);
-                    break;
-
-                case "PROXY":
-                    result = new Proxy().Execute(args);
-                    break;
-
+                case "CHALLENGE": return new Challenge().Execute(args);
+                case "PROXY": return new Proxy().Execute(args);
+                case "BROWSE": return new Commands.Browse().Execute(args);
+                case "DOWNLOAD": return new Download().Execute(args);
                 default: throw new InvalidOperationException("unknown command");
             }
-
-            Write(context, JsonConvert.SerializeObject(result));
         }
 
         private static IDictionary<string, string> ToDictionary(NameValueCollection queryString)
@@ -90,20 +66,6 @@ namespace SitecoreFileBrowser
             var source = queryString.AllKeys.Where(s => !string.IsNullOrWhiteSpace(s));
 
             return source.ToDictionary(key => key, key => queryString[key]);
-        }
-
-        private static bool WasChallenge(HttpContextBase context)
-        {
-            if (!context.Request.QueryString["command"].Equals("challenge", StringComparison.OrdinalIgnoreCase)) return false;
-
-            Write(context, Configuration.AuthenticationProvider.GetChallengeToken());
-
-            return true;
-        }
-
-        private static void Write(HttpContextBase context, string text)
-        {
-            context.Response.Write(text);
         }
     }
 }

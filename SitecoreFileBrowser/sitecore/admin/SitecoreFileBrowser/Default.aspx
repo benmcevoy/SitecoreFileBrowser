@@ -5,6 +5,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title></title>
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+
 </head>
 <body>
     <form id="form1" runat="server">
@@ -13,20 +18,25 @@
         </div>
 
         <div id="machines">
-            <asp:Repeater runat="server" id="MachineRepeater" ItemType="SitecoreFileBrowser.Browse.Model.MachineInfo">
+            <asp:Repeater runat="server" ID="MachineRepeater" ItemType="SitecoreFileBrowser.Browse.Model.MachineInfo">
                 <ItemTemplate>
-                    <asp:Button runat="server" Text="<%# Item.Name %>" OnCommand="OnCommand" CommandName="Browse" 
-                        CommandArgument="<%# Item.Address %>"/>
-                </ItemTemplate>
+                    <asp:Button runat="server" Text="<%# Item.Name %>" OnCommand="OnCommand" CommandName="Browse"
+                        CommandArgument="<%# Item.Address %>" />
+                   </ItemTemplate>
             </asp:Repeater>
         </div>
 
-        <div id="currentMachine">
+        <div>
+            
+            <asp:Literal runat="server" id="CurrentMachine"/>
 
             <div class="tree">
-                <asp:Literal runat="server" ID="json"></asp:Literal></div>
+                <asp:Literal runat="server" ID="TreeView"/>
+            </div>
             <div class="detail"></div>
         </div>
     </form>
+    
+
 </body>
 </html>

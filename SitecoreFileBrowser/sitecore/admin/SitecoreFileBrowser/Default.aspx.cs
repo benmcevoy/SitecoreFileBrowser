@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using Newtonsoft.Json;
 using Sitecore.sitecore.admin;
 using SitecoreFileBrowser.Browse.Model;
 
@@ -12,13 +13,13 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
             CheckSecurity(true);
 
             if (!Configuration.Enabled) throw new ApplicationException("SitecoreFileBrowser is disabled");
-            
+
             if (!IsPostBack)
             {
                 Configuration.Repository.Add(new MachineInfo
                 {
                     Address = LocalAddress(),
-                    Name = "local"
+                    Name = Environment.MachineName
                 });
             }
 
@@ -33,18 +34,30 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
 
         protected void OnCommand(object sender, CommandEventArgs e)
         {
-            if (e.CommandName == "Browse")
-            {
-                var command = $"{LocalAddress()}{Configuration.Route}?command=proxy&remoteCommand=browse&address={e.CommandArgument}";
-                var client = Configuration.AuthenticationProvider.CreateAuthenticatedWebClient(command);
-                json.Text = client.DownloadString(command);
-            }
+            if (e.CommandName == "Browse") Browse(e);
         }
 
-        private string LocalAddress()
+        private void Browse(CommandEventArgs e)
+        {
+            var remoteAddress = (string) e.CommandArgument;
+            var command = $"{LocalAddress()}{Configuration.Route}?command=proxy&remoteCommand=browse&address={remoteAddress}";
+            var client = Configuration.AuthenticationProvider.CreateAuthenticatedWebClient(command);
+
+            client.SetCookies(Request.Cookies, Request.Url.Authority);
+
+            var response = client.DownloadString(command);
+            var machineInfo = JsonConvert.DeserializeObject<MachineInfo>(response);
+
+            machineInfo.Address = remoteAddress;
+
+            CurrentMachine.Text = new CurrentMachine().Render(machineInfo);
+            TreeView.Text = new TreeView().Render(machineInfo);
+        }
+
+        protected string LocalAddress()
         {
             return Request.Url.Scheme + "://" + Request.Url.Authority +
-                   Request.ApplicationPath.TrimEnd('/');
+                   Request.ApplicationPath?.TrimEnd('/');
         }
     }
 }

@@ -14,12 +14,6 @@ namespace SitecoreFileBrowser
             Repository = (IMachineRepository)Factory.CreateObject("/sitecore/sitecoreFileBrowser/machineRepository", true);
             FileBrowser = (IFileBrowser)Factory.CreateObject("/sitecore/sitecoreFileBrowser/fileBrowser", true);
             Route = Factory.GetString("/sitecore/sitecoreFileBrowser/route", true);
-            BrowseCacheInMinutes = IntOrDefault(Factory.GetString("/sitecore/sitecoreFileBrowser/browseCacheInMinutes", false));
-        }
-
-        private static int IntOrDefault(string value, int defaultValue = 0)
-        {
-            return int.TryParse(value, out var result) ? result : defaultValue;
         }
 
         private static bool BoolOrDefault(string value, bool defaultValue = false)
@@ -31,7 +25,6 @@ namespace SitecoreFileBrowser
         public static IAuthenticationProvider AuthenticationProvider { get; set; }
         public static IFileBrowser FileBrowser { get; set; }
         public static string Route { get; set; }
-        public static int BrowseCacheInMinutes { get; set; }
         public static bool Enabled { get; set; }
     } 
 }

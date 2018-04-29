@@ -5,7 +5,7 @@ namespace SitecoreFileBrowser.Browse
 {
     public interface IFileBrowser
     {
-        Model.MachineInfo Browse();
+        Model.MachineInfo Browse(string address);
 
         Stream Download(FileInfo file);
     }
