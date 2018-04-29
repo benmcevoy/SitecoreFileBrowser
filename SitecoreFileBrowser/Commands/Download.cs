@@ -12,9 +12,7 @@ namespace SitecoreFileBrowser.Commands
 
         public override CommandArguments Execute(CommandArguments args)
         {
-            
-
-            Log.Info($"SitecoreFileBrowser: Begin executing download '{args}'", this);
+            Log.Info($"SitecoreFileBrowser: Begin executing Download '{args}'", this);
             
             var securityState =
                 Configuration.AuthenticationProvider.ValidateRequest(args.HttpContext.Request);
@@ -22,6 +20,9 @@ namespace SitecoreFileBrowser.Commands
             if (!securityState.IsAllowed) throw new SecurityException();
 
             var path = args["path"].FromBase64();
+
+            Log.Info($"SitecoreFileBrowser: Executing Download for '{path}'", this);
+
             var result = Configuration.FileBrowser.Download(new FileInfo { Path = args["path"] });
 
             args.HttpContext.Response.Clear();
