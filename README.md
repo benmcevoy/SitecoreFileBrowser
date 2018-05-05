@@ -8,7 +8,11 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -the App_Config folder<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -the sitecore/admin/Sitefilebrowser/default.aspx<br/>
 
-3. Navigate to /sitecore/admin/Sitecorefilebrowser
+3. Set the shared secret in SitecoreFileBrowser.config
+
+4. Deploy to any other remote machines
+
+5. Navigate to /sitecore/admin/Sitecorefilebrowser
 
 
 ![alt text](https://github.com/benmcevoy/SitecoreFileBrowser/blob/master/readme.PNG "A screenshot")
