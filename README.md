@@ -14,7 +14,7 @@ Why don’t you use the admin logs page to get the logs? Or is it hardened so no
 
 <em>It's secured via microchap, from [Kam Figy](https://github.com/kamsar/MicroCHAP)</em>
 
-<em>Yes, your delivery servers are hardened. Aren't they.</em>
+<em>Yes, your delivery servers are hardened. Aren't they.  So you can log into your authoring sitecore instance and view the file system of the delivery server.</em>
 
 <em>I was planning on plugging in the [Monoca editor](https://github.com/Microsoft/monaco-editor) as well, might allow doing a diff between files across servers.</em>
 
