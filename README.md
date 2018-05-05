@@ -10,3 +10,4 @@
 3. Navigate to /sitecore/admin/Sitecorefilebrowser
 
 
+![alt text](https://github.com/benmcevoy/SitecoreFileBrowser/blob/master/readme.PNG "A screenshot")
