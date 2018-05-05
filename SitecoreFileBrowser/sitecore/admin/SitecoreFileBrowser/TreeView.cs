@@ -29,7 +29,7 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
 
         private static StringBuilder Directory(string address, DirectoryInfo directory, StringBuilder writer)
         {
-            writer.Append($"<li class='directory'>{directory.Name}</li>");
+            writer.AppendLine($"<li class='directory'><span class='icon'><i class='fas fa-folder'></i></span>{directory.Name}");
 
             if (directory.Directories.Any())
             {
@@ -55,12 +55,14 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
                 writer.Append("</ul>");
             }
 
+            writer.AppendLine("</li>");
+
             return writer;
         }
         
         private static StringBuilder File(string address, FileInfo file, StringBuilder writer)
         {
-            writer.Append($"<li><a href='{Configuration.Route}?command=proxy&address={address}&remoteCommand=download&path={file.Path}'>{file.Name}</a></li>");
+            writer.AppendLine($"<li class='file {file.Attributes["Extension"].Replace(".","")} '><span class='icon'><i class='fas fa-file-alt'></i></span><a href='{Configuration.Route}?command=proxy&address={address}&remoteCommand=download&path={file.Path}'>{file.Name}</a></li>");
 
             return writer;
         }

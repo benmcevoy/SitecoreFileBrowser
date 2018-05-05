@@ -16,20 +16,8 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
 
             if (!IsPostBack)
             {
-                Configuration.Repository.Add(new MachineInfo
-                {
-                    Address = LocalAddress(),
-                    Name = Environment.MachineName
-                });
+                Address.Text = LocalAddress();
             }
-
-            MachineRepeater.DataSource = Configuration.Repository.Get();
-            MachineRepeater.DataBind();
-        }
-
-        protected void AddMachineClick(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         protected void OnCommand(object sender, CommandEventArgs e)
@@ -39,25 +27,55 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
 
         private void Browse(CommandEventArgs e)
         {
-            var remoteAddress = (string) e.CommandArgument;
-            var command = $"{LocalAddress()}{Configuration.Route}?command=proxy&remoteCommand=browse&address={remoteAddress}";
-            var client = Configuration.AuthenticationProvider.CreateAuthenticatedWebClient(command);
+            try
+            {
+                var remoteAddress = Address.Text;
 
-            client.SetCookies(Request.Cookies, Request.Url.Authority);
+                if (string.IsNullOrWhiteSpace(remoteAddress))
+                {
+                    CurrentMachine.Text = ErrorMessage("<p>The address is missing.</p>");
+                    return;
+                }
 
-            var response = client.DownloadString(command);
-            var machineInfo = JsonConvert.DeserializeObject<MachineInfo>(response);
+                var command = $"{LocalAddress()}{Configuration.Route}?command=proxy&remoteCommand=browse&address={remoteAddress}";
+                var client = Configuration.AuthenticationProvider.CreateAuthenticatedWebClient(command);
 
-            machineInfo.Address = remoteAddress;
+                client.SetCookies(Request.Cookies, Request.Url.Authority);
 
-            CurrentMachine.Text = new CurrentMachine().Render(machineInfo);
-            TreeView.Text = new TreeView().Render(machineInfo);
+                var response = client.DownloadString(command);
+                var machineInfo = JsonConvert.DeserializeObject<MachineInfo>(response);
+
+                machineInfo.Address = remoteAddress;
+
+                CurrentMachine.Text = new CurrentMachine().Render(machineInfo);
+                TreeView.Text = new TreeView().Render(machineInfo);
+            }
+            catch (Exception exception)
+            {
+                var address = string.IsNullOrWhiteSpace(Address.Text) ? "missing" : Address.Text;
+
+                CurrentMachine.Text = ErrorMessage($@"<p>{exception.Message}</p>
+                        <p>Check the address '<strong>{address}</strong>' is correct.</p>");
+            }
         }
 
         protected string LocalAddress()
         {
             return Request.Url.Scheme + "://" + Request.Url.Authority +
                    Request.ApplicationPath?.TrimEnd('/');
+        }
+
+        private static string ErrorMessage(string message)
+        {
+            return $@"<article class='message is-danger'>
+                        <div class='message-header'>
+                        <p>Oh no &nbsp; :( &nbsp;</p>
+                        <button class='delete' aria-label='delete'></button>
+                        </div>
+                        <div class='message-body'>
+                        {message}
+                        </div>
+                        </article>";
         }
     }
 }

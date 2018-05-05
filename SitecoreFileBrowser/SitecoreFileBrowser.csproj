@@ -90,6 +90,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="sitecore\admin\SitecoreFileBrowser\assets\admin.css" />
+    <Content Include="sitecore\admin\SitecoreFileBrowser\assets\bulma.min.css" />
+    <Content Include="sitecore\admin\SitecoreFileBrowser\assets\darkly.css" />
     <Content Include="sitecore\admin\SitecoreFileBrowser\Default.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>

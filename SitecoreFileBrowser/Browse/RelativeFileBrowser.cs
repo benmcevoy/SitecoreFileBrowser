@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using SitecoreFileBrowser.Browse.Model;
@@ -58,7 +59,7 @@ namespace SitecoreFileBrowser.Browse
             return result;
         }
 
-        private static FileInfo Map(FileSystemInfo f, string rootPath)
+        private static FileInfo Map(System.IO.FileInfo f, string rootPath)
         {
             var r = f.FullName.RelativePath(rootPath);
 
@@ -66,7 +67,15 @@ namespace SitecoreFileBrowser.Browse
             {
                 FullName = r,
                 Name = f.Name,
-                Path = r.ToBase64()
+                Path = r.ToBase64(),
+                Attributes = new Dictionary<string, string>
+                {
+                    { "Extension", f.Extension},
+                    { "Name" , f.Name},
+                    { "Length" , f.Length.ToString()},
+                    { "CreationTimeUtc" , f.CreationTimeUtc.ToString("dd MMM yyyy hh:mm:ss tt")},
+                    { "LastWriteTimeUtc" , f.LastWriteTimeUtc.ToString("dd MMM yyyy hh:mm:ss tt")}
+                }
             };
         }
 

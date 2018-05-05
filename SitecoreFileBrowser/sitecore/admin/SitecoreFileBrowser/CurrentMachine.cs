@@ -6,7 +6,7 @@ namespace SitecoreFileBrowser.sitecore.admin.SitecoreFileBrowser
     {
         public string Render(MachineInfo machine)
         {
-            return $@"<h3>{machine.Name} ({machine.Address})</h3>";
+            return $@"<h3 class='title'>{machine.Name}</h3><p class='subtitle'>{machine.Address}</p>";
         }
     }
 }
